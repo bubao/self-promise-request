@@ -6,9 +6,6 @@
 	"dependencies": {
 		"request": "^2.88.0"
 	},
-	"scripts": {
-		"test": "babel-node-debug ./index.js"
-	},
-	"author": "",
-	"license": "ISC"
+	"author": "bubao",
+	"license": "MIT"
 }

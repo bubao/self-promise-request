@@ -2,7 +2,6 @@ const EventEmitter = require('events');
 const Request = require('request');
 
 class PromisRequest extends EventEmitter {
-
 	request(options) {
 		return new Promise((resolve) => {
 			const { pipe, hiden, time, size, readable, ...opts } = options;
@@ -11,12 +10,12 @@ class PromisRequest extends EventEmitter {
 			let response = 0;
 			let total = 0;
 			let buffer = Buffer.alloc(0);
-			const res = Request(opts, (...resp) => {
+			const res = Request(opts, function (error, res, body) {
 				this.removeListener("process", () => { });
-				resolve({ ...resp, read, bufferBody: buffer.toString("utf8") });
+				resolve({ error, response: res, body, read, bufferBody: buffer.toString("utf8") });
 			}).on('response', (resp) => {
 				response = getLength(resp.headers['content-length'], size);
-			}).on('data', (data) => {
+			}).on('data', function (data) {
 				read += data.length;
 				if (readable) buffer = Buffer.concat([buffer, data]);
 				total = getTotal(size, response, read);
@@ -50,13 +49,4 @@ function getRead(options) {
 	return (options.read || 0)
 };
 
-// module.exports = PromisRequest;
 module.exports = new PromisRequest();
-
-// let test = new PromisRequest()
-// // let test = require('./index.js')
-
-// test.request({ uri: "https://www.python.org/ftp/python/2.7.15/python-2.7.15.amd64.msi" })
-// test.on("process", (res) => {
-// 	console.log(res)
-// })
