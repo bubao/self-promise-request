@@ -11,12 +11,12 @@ class PromisRequest extends EventEmitter {
 			let response = 0;
 			let total = 0;
 			let buffer = Buffer.alloc(0);
-			const res = Request(opts, (req) => {
+			const res = Request(opts, function (req) {
 				resolve({ ...req, read, bufferBody: buffer.toString("utf8") });
 				this.removeListener("process", () => { });
 			}).on('response', (resp) => {
 				response = getLength(resp.headers['content-length'], size);
-			}).on('data', (data) => {
+			}).on('data', function (data) {
 				read += data.length;
 				if (readable) buffer = Buffer.concat([buffer, data]);
 				total = getTotal(size, response, read);
