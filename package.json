@@ -1,6 +1,6 @@
 {
-	"name": "request.test",
-	"version": "1.0.0",
+	"name": "self-promise-request",
+	"version": "0.0.1",
 	"description": "",
 	"main": "index.js",
 	"dependencies": {
