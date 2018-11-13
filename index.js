@@ -11,12 +11,12 @@ class PromisRequest extends EventEmitter {
 			let response = 0;
 			let total = 0;
 			let buffer = Buffer.alloc(0);
-			const res = Request(opts, function (error, response, body) {
-				resolve({ error, response, body, read, bufferBody: buffer.toString("utf8") });
+			const res = Request(opts, (...resp) => {
 				this.removeListener("process", () => { });
+				resolve({ ...resp, read, bufferBody: buffer.toString("utf8") });
 			}).on('response', (resp) => {
 				response = getLength(resp.headers['content-length'], size);
-			}).on('data', function (data) {
+			}).on('data', (data) => {
 				read += data.length;
 				if (readable) buffer = Buffer.concat([buffer, data]);
 				total = getTotal(size, response, read);
@@ -50,4 +50,13 @@ function getRead(options) {
 	return (options.read || 0)
 };
 
+// module.exports = PromisRequest;
 module.exports = new PromisRequest();
+
+// let test = new PromisRequest()
+// // let test = require('./index.js')
+
+// test.request({ uri: "https://www.python.org/ftp/python/2.7.15/python-2.7.15.amd64.msi" })
+// test.on("process", (res) => {
+// 	console.log(res)
+// })
