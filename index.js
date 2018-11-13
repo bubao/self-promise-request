@@ -11,8 +11,8 @@ class PromisRequest extends EventEmitter {
 			let response = 0;
 			let total = 0;
 			let buffer = Buffer.alloc(0);
-			const res = Request(opts, function (...req) {
-				resolve({ ...req, read, bufferBody: buffer.toString("utf8") });
+			const res = Request(opts, function (error, response, body) {
+				resolve({ error, response, body, read, bufferBody: buffer.toString("utf8") });
 				this.removeListener("process", () => { });
 			}).on('response', (resp) => {
 				response = getLength(resp.headers['content-length'], size);
