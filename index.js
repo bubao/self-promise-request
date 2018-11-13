@@ -51,11 +51,3 @@ function getRead(options) {
 };
 
 module.exports = new PromisRequest();
-
-let test = new PromisRequest();
-
-test.request({ uri: "https://www.python.org" }).then((res) => {
-	console.log("end 1", res.error)
-	test.request({ uri: "https://www.python.org" }).then(() => console.log("end2"))
-})
-test.on("process", (res) => { console.log(res.completed / res.total * 100 + "%") })
