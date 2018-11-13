@@ -1,0 +1,14 @@
+{
+	"name": "request.test",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"dependencies": {
+		"request": "^2.88.0"
+	},
+	"scripts": {
+		"test": "babel-node-debug ./index.js"
+	},
+	"author": "",
+	"license": "ISC"
+}
