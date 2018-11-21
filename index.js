@@ -1,3 +1,9 @@
+/*
+ * @Author: mikey.zhaopeng 
+ * @Date: 2018-11-21 22:52:36 
+ * @Last Modified by:   mikey.zhaopeng 
+ * @Last Modified time: 2018-11-21 22:52:36 
+ */
 const EventEmitter = require('events');
 const Request = require('request');
 
