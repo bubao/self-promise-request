@@ -1,11 +1,12 @@
 /*
  * @Author: mikey.zhaopeng 
  * @Date: 2018-11-21 22:52:36 
- * @Last Modified by:   mikey.zhaopeng 
- * @Last Modified time: 2018-11-21 22:52:36 
+ * @Last Modified by: bubao
+ * @Last Modified time: 2018-11-25 10:45:09
  */
 const EventEmitter = require('events');
 const Request = require('request');
+const fs = require('fs');
 
 class PromisRequest extends EventEmitter {
 	request(options) {
@@ -44,7 +45,7 @@ function getTotal(size, response, read) {
 };
 
 function startNum(time) {
-	return time !== undefined ? time.start : new Date().valueOf() / 1000
+	return time !== undefined ? time.start : new Date().valueOf() / 1000;
 };
 function getLength(contentLength, size) {
 	let length = contentLength || size;
@@ -52,7 +53,7 @@ function getLength(contentLength, size) {
 }
 
 function getRead(options) {
-	return (options.read || 0)
+	return (options.read || 0);
 };
 
 module.exports = new PromisRequest();
