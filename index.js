@@ -1,21 +1,30 @@
 /*
  * @Author: bubao
- * @Date: 2018-11-21 22:52:36 
+ * @Date: 2018-11-21 22:52:36
  * @Last Modified by: bubao
- * @Last Modified time: 2019-11-30 17:36:37
+ * @Last Modified time: 2019-11-30 21:22:15
  */
-const EventEmitter = require('events');
-const Request = require('request');
-const fs = require('fs');
+const EventEmitter = require("events");
+const Request = require("request");
+const fs = require("fs");
 
 class PromisRequest extends EventEmitter {
-	constructor(){
+	constructor() {
 		super();
-		this.request = this.request.bind(this)
+		this.instance = null;
+		this.request = this.request.bind(this);
 	}
+
+	static init() {
+		if (!this.instance) {
+			const that = this;
+			this.instance = new that();
+		}
+		return this.instance;
+	}
+
 	request(options) {
-		const emit = this.emit
-		const removeListener = thie.removeListener
+		const that = this;
 		return new Promise(function(resolve) {
 			const { pipe, hiden, time, size, readable, ...opts } = options;
 			const start = startNum(time);
@@ -23,19 +32,30 @@ class PromisRequest extends EventEmitter {
 			let response = 0;
 			let total = 0;
 			let buffer = Buffer.alloc(0);
-			const res = Request(opts, function (error, res, body) {
-				removeListener("process", () => { });
-				resolve({ error, response: res, body, read, bufferBody: buffer.toString("utf8") });
-			}).on('response', (resp) => {
-				response = getLength(resp.headers['content-length'], size);
-			}).on('data', function (data) {
-				read += data.length;
-				if (readable) buffer = Buffer.concat([buffer, data]);
-				total = getTotal(size, response, read);
-				emit("process", {
-					completed: read, total, hiden, time: { start }, status: { down: '正在下载...', end: '完成\n' }
+			const res = Request(opts, function(error, res, body) {
+				resolve({
+					error,
+					response: res,
+					body,
+					read,
+					bufferBody: buffer.toString("utf8")
 				});
-			});
+			})
+				.on("response", resp => {
+					response = getLength(resp.headers["content-length"], size);
+				})
+				.on("data", function(data) {
+					read += data.length;
+					if (readable) buffer = Buffer.concat([buffer, data]);
+					total = getTotal(size, response, read);
+					that.emit("process", {
+						completed: read,
+						total,
+						hiden,
+						time: { start },
+						status: { down: "正在下载...", end: "完成\n" }
+					});
+				});
 			// 如果 pipe参数存在，则下载到指定路径
 			download(res, pipe);
 		});
@@ -43,7 +63,7 @@ class PromisRequest extends EventEmitter {
 }
 
 function download(data, dir) {
-	if (dir && dir.length) data.pipe(fs.createWriteStream(dir || './'));
+	if (dir && dir.length) data.pipe(fs.createWriteStream(dir || "./"));
 }
 
 /**
@@ -54,8 +74,10 @@ function download(data, dir) {
  * @returns number
  */
 function getTotal(size, response, read) {
-	return (((size !== undefined || response === undefined) && size >= read) ? size : response || read + 1);
-};
+	return (size !== undefined || response === undefined) && size >= read
+		? size
+		: response || read + 1;
+}
 
 /**
  * 开始时间
@@ -64,7 +86,8 @@ function getTotal(size, response, read) {
  */
 function startNum(time) {
 	return time !== undefined ? time.start : new Date().valueOf();
-};
+}
+
 /**
  * 获取数据长度
  * @param {number} contentLength 数据长度
@@ -72,12 +95,12 @@ function startNum(time) {
  * @returns number number
  */
 function getLength(contentLength, size) {
-	let length = contentLength || size;
+	const length = contentLength || size;
 	return length ? parseInt(length || 0, 10) : 0;
 }
 
 function getRead(options) {
-	return (options.read || 0);
-};
+	return options.read || 0;
+}
 
 module.exports = PromisRequest;
