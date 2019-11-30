@@ -2,7 +2,7 @@
  * @Author: bubao
  * @Date: 2018-11-21 22:52:36
  * @Last Modified by: bubao
- * @Last Modified time: 2019-12-01 01:21:31
+ * @Last Modified time: 2019-12-01 02:59:17
  */
 const EventEmitter = require("events");
 const Request = require("request");
@@ -25,14 +25,25 @@ class PromisRequest extends EventEmitter {
 
 	request(options) {
 		const that = this;
+		const { pipe, hiden, time, size, readable, ...opts } = options;
+		const start = startNum(time);
+		let read = getRead(options);
+		let response = 0;
+		let total = 0;
+		let speed = 0;
+		let buffer = Buffer.alloc(0);
+		const Interval = setInterval(() => {
+			that.emit("process", {
+				completed: read,
+				total: total,
+				hiden,
+				speed,
+				time: { start },
+				status: { down: "正在下载...", end: "完成\n" }
+			});
+			speed = 0;
+		}, 1000);
 		return new Promise(function(resolve) {
-			const { pipe, hiden, time, size, readable, ...opts } = options;
-			const start = startNum(time);
-			let read = getRead(options);
-			let response = 0;
-			let total = 0;
-			let speed = 0;
-			let buffer = Buffer.alloc(0);
 			const res = Request(opts, function(error, res, body) {
 				resolve({
 					error,
@@ -46,20 +57,13 @@ class PromisRequest extends EventEmitter {
 					response = getLength(resp.headers["content-length"], size);
 				})
 				.on("data", function(data) {
-					speed = data.length;
-					read += speed;
+					speed += data.length;
+					read += data.length;
 
 					if (readable) buffer = Buffer.concat([buffer, data]);
 					total = getTotal(size, response, read);
-					that.emit("process", {
-						completed: read,
-						total,
-						hiden,
-						speed,
-						time: { start },
-						status: { down: "正在下载...", end: "完成\n" }
-					});
-				});
+				})
+				.on("end", () => clearInterval(Interval));
 			// 如果 pipe参数存在，则下载到指定路径
 			download(res, pipe);
 		});
