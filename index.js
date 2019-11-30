@@ -2,7 +2,7 @@
  * @Author: bubao
  * @Date: 2018-11-21 22:52:36
  * @Last Modified by: bubao
- * @Last Modified time: 2019-12-01 02:59:17
+ * @Last Modified time: 2019-12-01 03:23:52
  */
 const EventEmitter = require("events");
 const Request = require("request");
@@ -63,7 +63,17 @@ class PromisRequest extends EventEmitter {
 					if (readable) buffer = Buffer.concat([buffer, data]);
 					total = getTotal(size, response, read);
 				})
-				.on("end", () => clearInterval(Interval));
+				.on("end", () => {
+					that.emit("process", {
+						completed: read,
+						total: total,
+						hiden,
+						speed,
+						time: { start },
+						status: { down: "正在下载...", end: "完成\n" }
+					});
+					clearInterval(Interval);
+				});
 			// 如果 pipe参数存在，则下载到指定路径
 			download(res, pipe);
 		});
