@@ -2,7 +2,7 @@
  * @Author: bubao
  * @Date: 2018-11-21 22:52:36
  * @Last Modified by: bubao
- * @Last Modified time: 2019-11-30 21:22:15
+ * @Last Modified time: 2019-12-01 01:21:31
  */
 const EventEmitter = require("events");
 const Request = require("request");
@@ -31,6 +31,7 @@ class PromisRequest extends EventEmitter {
 			let read = getRead(options);
 			let response = 0;
 			let total = 0;
+			let speed = 0;
 			let buffer = Buffer.alloc(0);
 			const res = Request(opts, function(error, res, body) {
 				resolve({
@@ -45,13 +46,16 @@ class PromisRequest extends EventEmitter {
 					response = getLength(resp.headers["content-length"], size);
 				})
 				.on("data", function(data) {
-					read += data.length;
+					speed = data.length;
+					read += speed;
+
 					if (readable) buffer = Buffer.concat([buffer, data]);
 					total = getTotal(size, response, read);
 					that.emit("process", {
 						completed: read,
 						total,
 						hiden,
+						speed,
 						time: { start },
 						status: { down: "正在下载...", end: "完成\n" }
 					});
