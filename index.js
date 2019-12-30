@@ -8,21 +8,36 @@ const EventEmitter = require("events");
 const Request = require("request");
 const fs = require("fs");
 
-class PromisRequest extends EventEmitter {
+class PromiseRequest extends EventEmitter {
 	constructor() {
 		super();
 		this.instance = null;
 		this.request = this.request.bind(this);
 	}
 
+	/**
+	 * 单例初始化
+	 * @author bubao
+	 * @date 2019-12-30
+	 * @static
+	 * @returns　this
+	 * @memberof PromiseRequest
+	 */
 	static init() {
 		if (!this.instance) {
-			const that = this;
-			this.instance = new that();
+			this.instance = new this();
 		}
 		return this.instance;
 	}
 
+	/**
+	 * request
+	 * @author bubao
+	 * @date 2019-12-30
+	 * @param {any} options { pipe, hiden, time, size, readable, ...opts }
+	 * @returns {Promise}
+	 * @memberof PromiseRequest
+	 */
 	request(options) {
 		const that = this;
 		const { pipe, hiden, time, size, readable, ...opts } = options;
@@ -43,8 +58,8 @@ class PromisRequest extends EventEmitter {
 			});
 			speed = 0;
 		}, 1000);
-		return new Promise(function(resolve) {
-			const res = Request(opts, function(error, res, body) {
+		return new Promise(function (resolve) {
+			const res = Request(opts, function (error, res, body) {
 				resolve({
 					error,
 					response: res,
@@ -56,7 +71,7 @@ class PromisRequest extends EventEmitter {
 				.on("response", resp => {
 					response = getLength(resp.headers["content-length"], size);
 				})
-				.on("data", function(data) {
+				.on("data", function (data) {
 					speed += data.length;
 					read += data.length;
 
@@ -80,6 +95,13 @@ class PromisRequest extends EventEmitter {
 	}
 }
 
+/**
+ * 如果存在piep则下载
+ * @author bubao
+ * @date 2019-12-30
+ * @param {buffer} data stream 
+ * @param {string} dir pipe
+ */
 function download(data, dir) {
 	if (dir && dir.length) data.pipe(fs.createWriteStream(dir || "./"));
 }
@@ -121,4 +143,4 @@ function getRead(options) {
 	return options.read || 0;
 }
 
-module.exports = PromisRequest;
+module.exports = PromiseRequest;
