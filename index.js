@@ -40,7 +40,14 @@ class PromiseRequest extends EventEmitter {
 	 */
 	request(options) {
 		const that = this;
-		const { pipe, hiden, time, size, readable, ...opts } = options;
+		const {
+			pipe, // download path
+			hiden, // hiden ora
+			time, // start time
+			size, // download size
+			readable, // can be readable
+			...opts // request options
+		} = options;
 		const start = startNum(time);
 		let read = getRead(options);
 		let response = 0;
