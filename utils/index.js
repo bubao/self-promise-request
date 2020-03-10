@@ -3,7 +3,7 @@
  * @Author: bubao
  * @Date: 2020-03-10 16:16:16
  * @LastEditors: bubao
- * @LastEditTime: 2020-03-10 18:51:10
+ * @LastEditTime: 2020-03-10 21:02:53
  */
 const slog = require("single-line-log").stdout;
 const clicolor = require("cli-color");
@@ -65,9 +65,50 @@ function time(d) {
 	return t;
 }
 
+/**
+ * 获取已完成进度
+ * @param {number} size 数据大小
+ * @param {number} response 数据大小
+ * @param {number} read 已读
+ * @returns number
+ */
+function getTotal(size, response, read) {
+	return (size !== undefined || response === undefined) && size >= read
+		? size
+		: response || read + 1;
+}
+
+/**
+ * 开始时间
+ * @param {number} time 时间戳
+ * @returns number
+ */
+function startNum(time) {
+	return time !== undefined ? time.start : new Date().valueOf();
+}
+
+/**
+ * 获取数据长度
+ * @param {number} contentLength 数据长度
+ * @param {number} size 数据大小
+ * @returns number number
+ */
+function getLength(contentLength, size) {
+	const length = contentLength || size;
+	return length ? parseInt(length || 0, 10) : 0;
+}
+
+function getRead(options) {
+	return options.read || 0;
+}
+
 module.exports = {
 	slog,
 	clicolor,
 	time,
-	byteSize
+	byteSize,
+	getRead,
+	getLength,
+	startNum,
+	getTotal
 };

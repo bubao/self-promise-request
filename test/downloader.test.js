@@ -3,9 +3,9 @@
  * @Author: bubao
  * @Date: 2020-03-10 16:01:02
  * @LastEditors: bubao
- * @LastEditTime: 2020-03-10 19:04:27
+ * @LastEditTime: 2020-03-10 21:20:10
  */
-const { Downloader } = require("./index");
+const Downloader = require("../src/downloader");
 const ProgressBar = require("../src/progressbar");
 const Req = Downloader.init();
 const Bar = ProgressBar.init({ description: "archlinux", bar_length: 25 });

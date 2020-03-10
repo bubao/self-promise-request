@@ -1,13 +1,13 @@
-/*
+/**
+ * @Description:
  * @Author: bubao
  * @Date: 2018-11-21 22:52:36
- * @Last Modified by: bubao
- * @Last Modified time: 2019-12-01 03:23:52
+ * @LastEditors: bubao
+ * @LastEditTime: 2020-03-10 21:20:25
  */
 const EventEmitter = require("events");
 const Request = require("request");
-const fs = require("fs");
-const Downloader = require("./src/downloader");
+const { getRead, getLength, getTotal, startNum } = require("./utils/index");
 
 class PromisRequest extends EventEmitter {
 	constructor() {
@@ -45,7 +45,7 @@ class PromisRequest extends EventEmitter {
 			speed = 0;
 		}, 1000);
 		return new Promise(function(resolve) {
-			const res = Request(opts, function(error, res, body) {
+			Request(opts, function(error, res, body) {
 				resolve({
 					error,
 					response: res,
@@ -75,52 +75,8 @@ class PromisRequest extends EventEmitter {
 					});
 					clearInterval(Interval);
 				});
-			// 如果 pipe参数存在，则下载到指定路径
-			download(res, pipe);
 		});
 	}
 }
 
-function download(data, dir) {
-	if (dir && dir.length) data.pipe(fs.createWriteStream(dir || "./"));
-}
-
-/**
- * 获取已完成进度
- * @param {number} size 数据大小
- * @param {number} response 数据大小
- * @param {number} read 已读
- * @returns number
- */
-function getTotal(size, response, read) {
-	return (size !== undefined || response === undefined) && size >= read
-		? size
-		: response || read + 1;
-}
-
-/**
- * 开始时间
- * @param {number} time 时间戳
- * @returns number
- */
-function startNum(time) {
-	return time !== undefined ? time.start : new Date().valueOf();
-}
-
-/**
- * 获取数据长度
- * @param {number} contentLength 数据长度
- * @param {number} size 数据大小
- * @returns number number
- */
-function getLength(contentLength, size) {
-	const length = contentLength || size;
-	return length ? parseInt(length || 0, 10) : 0;
-}
-
-function getRead(options) {
-	return options.read || 0;
-}
-
 module.exports = PromisRequest;
-module.Downloader = Downloader;
