@@ -4,7 +4,9 @@
 	"description": "自己封装的一个request，使用promise，并能监听下载进度。",
 	"main": "index.js",
 	"dependencies": {
-		"request": "^2.88.0"
+		"cli-color": "^2.0.0",
+		"request": "^2.88.2",
+		"single-line-log": "^1.1.2"
 	},
 	"devDependencies": {
 		"@commitlint/cli": "^8.2.0",

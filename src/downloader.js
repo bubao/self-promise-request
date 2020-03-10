@@ -1,40 +1,60 @@
-/*
+/**
+ * @Description:
  * @Author: bubao
- * @Date: 2018-11-21 22:52:36
- * @Last Modified by: bubao
- * @Last Modified time: 2019-12-01 03:23:52
+ * @Date: 2020-03-10 18:56:45
+ * @LastEditors: bubao
+ * @LastEditTime: 2020-03-10 18:56:58
  */
 const EventEmitter = require("events");
 const Request = require("request");
 const fs = require("fs");
-const Downloader = require("./src/downloader");
 
-class PromisRequest extends EventEmitter {
+class PromiseRequest extends EventEmitter {
 	constructor() {
 		super();
 		this.instance = null;
 		this.request = this.request.bind(this);
 	}
 
+	/**
+	 * 单例初始化
+	 * @author bubao
+	 * @date 2019-12-30
+	 * @static
+	 * @returns　this
+	 * @memberof PromiseRequest
+	 */
 	static init() {
 		if (!this.instance) {
-			const that = this;
-			this.instance = new that();
+			this.instance = new this();
 		}
 		return this.instance;
 	}
 
+	/**
+	 * request
+	 * @author bubao
+	 * @date 2019-12-30
+	 * @param {any} options { pipe, hiden, time, size, readable, ...opts }
+	 * @returns {Promise}
+	 * @memberof PromiseRequest
+	 */
 	request(options) {
 		const that = this;
-		const { pipe, hiden, time, size, readable, ...opts } = options;
+		const {
+			pipe, // download path
+			hiden, // hiden ora
+			time, // start time
+			size, // download size
+			...opts // request options
+		} = options;
 		const start = startNum(time);
 		let read = getRead(options);
 		let response = 0;
 		let total = 0;
 		let speed = 0;
-		let buffer = Buffer.alloc(0);
 		const Interval = setInterval(() => {
-			that.emit("process", {
+			that.emit("progress", {
 				completed: read,
 				total: total,
 				hiden,
@@ -45,27 +65,18 @@ class PromisRequest extends EventEmitter {
 			speed = 0;
 		}, 1000);
 		return new Promise(function(resolve) {
-			const res = Request(opts, function(error, res, body) {
-				resolve({
-					error,
-					response: res,
-					body,
-					read,
-					bufferBody: buffer.toString("utf8")
-				});
-			})
+			const res = Request(opts)
 				.on("response", resp => {
+					console.log(resp.headers);
 					response = getLength(resp.headers["content-length"], size);
 				})
 				.on("data", function(data) {
 					speed += data.length;
 					read += data.length;
-
-					if (readable) buffer = Buffer.concat([buffer, data]);
 					total = getTotal(size, response, read);
 				})
 				.on("end", () => {
-					that.emit("process", {
+					that.emit("progress", {
 						completed: read,
 						total: total,
 						hiden,
@@ -74,6 +85,7 @@ class PromisRequest extends EventEmitter {
 						status: { down: "正在下载...", end: "完成\n" }
 					});
 					clearInterval(Interval);
+					resolve();
 				});
 			// 如果 pipe参数存在，则下载到指定路径
 			download(res, pipe);
@@ -81,6 +93,13 @@ class PromisRequest extends EventEmitter {
 	}
 }
 
+/**
+ * 如果存在piep则下载
+ * @author bubao
+ * @date 2019-12-30
+ * @param {buffer} data stream
+ * @param {string} dir pipe
+ */
 function download(data, dir) {
 	if (dir && dir.length) data.pipe(fs.createWriteStream(dir || "./"));
 }
@@ -122,5 +141,4 @@ function getRead(options) {
 	return options.read || 0;
 }
 
-module.exports = PromisRequest;
-module.Downloader = Downloader;
+module.exports = PromiseRequest;
