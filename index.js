@@ -121,6 +121,5 @@ function getLength(contentLength, size) {
 function getRead(options) {
 	return options.read || 0;
 }
-
+PromisRequest.Downloader = Downloader;
 module.exports = PromisRequest;
-module.Downloader = Downloader;
