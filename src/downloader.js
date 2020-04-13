@@ -3,7 +3,7 @@
  * @Author: bubao
  * @Date: 2020-03-10 18:56:45
  * @LastEditors: bubao
- * @LastEditTime: 2020-03-10 21:11:47
+ * @LastEditTime: 2020-04-13 19:12:28
  */
 const EventEmitter = require("events");
 const Request = require("request");
@@ -46,7 +46,7 @@ class PromiseRequest extends EventEmitter {
 			pipe, // download path
 			hiden, // hiden ora
 			time, // start time
-			size, // download size
+			size, // download size content-length
 			...opts // request options
 		} = options;
 		const start = startNum(time);
@@ -68,7 +68,6 @@ class PromiseRequest extends EventEmitter {
 		return new Promise(function(resolve) {
 			const res = Request(opts)
 				.on("response", resp => {
-					console.log(resp.headers);
 					response = getLength(resp.headers["content-length"], size);
 				})
 				.on("data", function(data) {
