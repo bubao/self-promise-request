@@ -32,12 +32,12 @@ Requests.request({ uri: "http://www.baidu.com" });
 如果想下载文件到本地
 
 ```js
-let Req = require("self-promise-request");
+let Req = require("self-promise-request").Downloader;
 
 const Requests = new Req();
 // 使用 on 函数监听进度
 Requests.on("process", res => {
-	console.log(res);
+    console.log(res);
 });
 
 // request 直接能接收 key value 的参数，和 npm 的 request 模块接收的参数一致
