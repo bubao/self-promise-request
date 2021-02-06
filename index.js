@@ -3,7 +3,7 @@
  * @Author: bubao
  * @Date: 2018-11-21 22:52:36
  * @last author: bubao
- * @last edit time: 2021-02-06 17:12:59
+ * @last edit time: 2021-02-06 18:21:08
  */
 const EventEmitter = require("events");
 const Request = require("request");
@@ -56,7 +56,7 @@ class PromiseRequest extends EventEmitter {
 		let speed = 0;
 		let buffer = Buffer.alloc(0);
 		const Interval = setInterval(() => {
-			that.emit("process", {
+			that.emit("progress", {
 				completed: read,
 				total: total,
 				hiden,

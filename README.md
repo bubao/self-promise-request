@@ -21,7 +21,7 @@ let Req = require("self-promise-request");
 
 const Requests = new Req();
 // 使用 on 函数监听进度
-Requests.on("process", res => {
+Requests.on("progress", res => {
     console.log(res);
 });
 
@@ -36,7 +36,7 @@ let Req = require("self-promise-request").Downloader;
 
 const Requests = new Req();
 // 使用 on 函数监听进度
-Requests.on("process", res => {
+Requests.on("progress", res => {
     console.log(res);
 });
 
