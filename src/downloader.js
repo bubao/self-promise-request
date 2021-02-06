@@ -2,15 +2,15 @@
  * @Description:
  * @Author: bubao
  * @Date: 2020-03-10 18:56:45
- * @LastEditors: bubao
- * @LastEditTime: 2020-04-13 19:12:28
+ * @last author: bubao
+ * @last edit time: 2021-02-06 16:56:48
  */
 const EventEmitter = require("events");
 const Request = require("request");
 const { getRead, getLength, getTotal, startNum } = require("../utils/index");
 const fs = require("fs");
 
-class PromiseRequest extends EventEmitter {
+class Downloader extends EventEmitter {
 	constructor() {
 		super();
 		this.instance = null;
@@ -22,7 +22,6 @@ class PromiseRequest extends EventEmitter {
 	 * @author bubao
 	 * @date 2019-12-30
 	 * @static
-	 * @returns　this
 	 * @memberof PromiseRequest
 	 */
 	static init() {
@@ -36,7 +35,12 @@ class PromiseRequest extends EventEmitter {
 	 * request
 	 * @author bubao
 	 * @date 2019-12-30
-	 * @param {any} options { pipe, hiden, time, size, readable, ...opts }
+	 * @param {{
+	 * pipe:string, // download path
+	 * hide:boolean, // hiden ora
+	 * time:number, // start time
+	 * size:number, // download size content-length
+	 * }} options { pipe, hiden, time, size, readable, ...opts }
 	 * @returns {Promise}
 	 * @memberof PromiseRequest
 	 */
@@ -54,10 +58,12 @@ class PromiseRequest extends EventEmitter {
 		let response = 0;
 		let total = 0;
 		let speed = 0;
+
+		const res = Request(opts);
 		const Interval = setInterval(() => {
 			that.emit("progress", {
 				completed: read,
-				total: total,
+				total,
 				hiden,
 				speed,
 				time: { start },
@@ -65,15 +71,26 @@ class PromiseRequest extends EventEmitter {
 			});
 			speed = 0;
 		}, 1000);
+		read && res.setHeader("Range", `bytes=${read}-`);
+
 		return new Promise(function(resolve) {
-			const res = Request(opts)
-				.on("response", resp => {
-					response = getLength(resp.headers["content-length"], size);
-				})
+			res.on("response", resp => {
+				const length = resp.headers["content-length"];
+				response = getLength(
+					read && length !== undefined
+						? read + (length - 0)
+						: length,
+					size
+				);
+			})
 				.on("data", function(data) {
 					speed += data.length;
 					read += data.length;
-					total = getTotal(size, response, read);
+					total = getTotal(
+						size,
+						response,
+						read
+					);
 				})
 				.on("end", () => {
 					that.emit("progress", {
@@ -88,7 +105,7 @@ class PromiseRequest extends EventEmitter {
 					resolve();
 				});
 			// 如果 pipe参数存在，则下载到指定路径
-			download(res, pipe);
+			download(res, pipe, read);
 		});
 	}
 }
@@ -99,8 +116,12 @@ class PromiseRequest extends EventEmitter {
  * @date 2019-12-30
  * @param {buffer} data stream
  * @param {string} dir pipe
+ * @param {boolean} append
  */
-function download(data, dir) {
-	if (dir && dir.length) data.pipe(fs.createWriteStream(dir || "./"));
+function download(data, dir, append) {
+	if (dir && dir.length) {
+		const opts = append ? { flags: "a" } : undefined;
+		data.pipe(fs.createWriteStream(dir || "./", opts));
+	}
 }
-module.exports = PromiseRequest;
+module.exports = Downloader;

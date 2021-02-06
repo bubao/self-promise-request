@@ -1,16 +1,9 @@
 /**
- * @Description:
+ * @Description: ProgressBar 命令行进度条
  * @Author: bubao
- * @Date: 2020-03-10 16:14:55
- * @LastEditors: bubao
- * @LastEditTime: 2020-03-10 18:38:44
- */
-/**
- * @author bubao
- * @description ProgressBar 命令行进度条
- * @date: 2018-03-15
- * @Last Modified by: bubao
- * @Last Modified time: 2019-12-01 03:42:08
+ * @Date: 2018-03-15 16:14:55
+ * @last author: bubao
+ * @last edit time: 2021-02-06 16:36:47
  */
 const { slog, clicolor, time, byteSize } = require("../utils");
 
@@ -37,7 +30,6 @@ class ProgressBar {
 	 * 初始化参数
 	 * @static
 	 * @param {any} [props={}] {description:"命令行开头的文字信息",bar_length:进度条的长度(单位：字符)，默认设为 25}
-	 * @returns　this
 	 * @memberof PromiseRequest
 	 */
 	static init(props = {}) {
@@ -61,14 +53,14 @@ class ProgressBar {
 	/**
 	 * @description 渲染进度条
 	 * @author bubao
-	 * @param {object} opts {
-	 * completed:number(已完成),
-	 * total:number(总量),
-	 * hiden:bool(隐藏),
-	 * speed:number(下载速度)
-	 * status.down:string(下载时文字),
-	 * status.end:string(完成时的文字)
-	 * }
+	 * @param {{
+	 * completed:number, // (已完成)
+	 * total:number, // (总量)
+	 * hiden:boolean, // (隐藏)
+	 * speed:number, // (下载速度)
+	 * status:{down:string},// (下载时文字)
+	 * status:{end:string},// (完成时的文字)
+	 * }} opts
 	 * @memberof ProgressBar
 	 */
 	render(opts) {

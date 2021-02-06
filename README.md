@@ -20,11 +20,11 @@ $ cnpm i https://github.com/bubao/self-promise-request.git#v0.0.3 --save
 let Req = require("self-promise-request");
 
 const Requests = new Req();
-// 使用on函数监听进度
+// 使用 on 函数监听进度
 Requests.on("process", res => {
-	console.log(res);
+    console.log(res);
 });
 
-// request 直接能接收 key value 的参数，和npm的request模块接收的参数一致
+// request 直接能接收 key value 的参数，和 npm 的 request 模块接收的参数一致
 Requests.request({ uri: "http://www.baidu.com" });
 ```

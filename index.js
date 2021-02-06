@@ -2,12 +2,13 @@
  * @Description:
  * @Author: bubao
  * @Date: 2018-11-21 22:52:36
- * @LastEditors: bubao
- * @LastEditTime: 2020-04-13 19:12:14
+ * @last author: bubao
+ * @last edit time: 2021-02-06 17:02:02
  */
 const EventEmitter = require("events");
 const Request = require("request");
 const { getRead, getLength, getTotal, startNum } = require("./utils/index");
+const Downloader = require("./src/downloader");
 
 class PromisRequest extends EventEmitter {
 	constructor() {
@@ -18,8 +19,7 @@ class PromisRequest extends EventEmitter {
 
 	static init() {
 		if (!this.instance) {
-			const that = this;
-			this.instance = new that();
+			this.instance = new this();
 		}
 		return this.instance;
 	}
@@ -79,4 +79,5 @@ class PromisRequest extends EventEmitter {
 	}
 }
 
+PromisRequest.Downloader = Downloader;
 module.exports = PromisRequest;
