@@ -3,20 +3,27 @@
  * @Author: bubao
  * @Date: 2018-11-21 22:52:36
  * @last author: bubao
- * @last edit time: 2021-02-06 17:02:02
+ * @last edit time: 2021-02-06 17:12:59
  */
 const EventEmitter = require("events");
 const Request = require("request");
 const { getRead, getLength, getTotal, startNum } = require("./utils/index");
 const Downloader = require("./src/downloader");
 
-class PromisRequest extends EventEmitter {
+class PromiseRequest extends EventEmitter {
 	constructor() {
 		super();
 		this.instance = null;
 		this.request = this.request.bind(this);
 	}
 
+	/**
+	 * 单例初始化
+	 * @author bubao
+	 * @date 2019-12-30
+	 * @static
+	 * @memberof PromiseRequest
+	 */
 	static init() {
 		if (!this.instance) {
 			this.instance = new this();
@@ -24,9 +31,24 @@ class PromisRequest extends EventEmitter {
 		return this.instance;
 	}
 
+	/**
+	 * request
+	 * @author bubao
+	 * @date 2019-12-30
+	 * @param {any} options { pipe, hiden, time, size, readable, ...opts }
+	 * @returns {Promise}
+	 * @memberof PromiseRequest
+	 */
 	request(options) {
 		const that = this;
-		const { pipe, hiden, time, size, readable, ...opts } = options;
+		const {
+			pipe, // download path
+			hiden, // hiden ora
+			time, // start time
+			size, // download size
+			readable, // can be readable
+			...opts // request options
+		} = options;
 		const start = startNum(time);
 		let read = getRead(options);
 		let response = 0;
@@ -79,5 +101,5 @@ class PromisRequest extends EventEmitter {
 	}
 }
 
-PromisRequest.Downloader = Downloader;
-module.exports = PromisRequest;
+PromiseRequest.Downloader = Downloader;
+module.exports = PromiseRequest;
