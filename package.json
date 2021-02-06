@@ -9,30 +9,25 @@
 		"single-line-log": "^1.1.2"
 	},
 	"devDependencies": {
-		"@commitlint/cli": "^8.2.0",
-		"@commitlint/config-conventional": "^8.2.0",
+		"@commitlint/cli": "^11.0.0",
+		"@commitlint/config-conventional": "^11.0.0",
 		"commitizen": "^4.0.3",
-		"cross-env": "^5.2.0",
 		"cz-customizable": "^6.2.0",
-		"eslint": "^6.7.1",
-		"eslint-config-prettier": "^6.7.0",
-		"eslint-config-standard": "^14.1.0",
+		"eslint": "^7.19.0",
+		"eslint-config-standard": "^16.0.2",
 		"eslint-plugin-import": "^2.18.2",
 		"eslint-plugin-json": "^2.0.1",
-		"eslint-plugin-node": "^10.0.0",
-		"eslint-plugin-prettier": "^3.1.1",
+		"eslint-plugin-node": "^11.1.0",
 		"eslint-plugin-promise": "^4.2.1",
-		"eslint-plugin-standard": "^4.0.1",
-		"husky": "^2.2.0",
-		"prettier": "^1.17.0",
-		"pretty-quick": "^2.0.1"
+		"eslint-plugin-standard": "^5.0.0",
+		"husky": "^4.3.8"
 	},
 	"author": "bubao",
 	"license": "MIT",
 	"husky": {
 		"hooks": {
-			"pre-commit": "pretty-quick --staged",
-			"pre-push": "pretty-quick --staged",
+			"pre-commit": "eslint --fix .",
+			"pre-push": "eslint --fix .",
 			"commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
 		}
 	},
