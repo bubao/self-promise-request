@@ -3,7 +3,7 @@
  * @Author: bubao
  * @Date: 2018-11-21 22:52:36
  * @last author: bubao
- * @last edit time: 2021-03-05 03:30:59
+ * @last edit time: 2021-05-04 14:38:56
  */
 const Downloader = require("./src/downloader");
 const PromiseRequest = require("./src/request");

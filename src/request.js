@@ -3,7 +3,7 @@
  * @Author: bubao
  * @Date: 2018-11-21 22:52:36
  * @last author: bubao
- * @last edit time: 2021-03-05 03:31:11
+ * @last edit time: 2021-05-04 14:41:17
  */
 const EventEmitter = require("events");
 const Request = require("request");
@@ -53,18 +53,8 @@ class PromiseRequest extends EventEmitter {
 		let total = 0;
 		let speed = 0;
 
-		const Interval = setInterval(() => {
-			that.emit("progress", {
-				completed: read,
-				total: total,
-				hiden,
-				speed,
-				time: { start },
-				status: { down: "正在下载...", end: "完成\n" }
-			});
-			speed = 0;
-		}, 1000);
-		return new Promise(function(resolve) {
+		let Interval = () => {};
+		return new Promise(function(resolve, reject) {
 			const res = Request(opts, function(error, res, body) {
 				resolve({
 					error,
@@ -81,6 +71,17 @@ class PromiseRequest extends EventEmitter {
 							: length,
 						size
 					);
+					Interval = setInterval(() => {
+						that.emit("progress", {
+							completed: read,
+							total: total,
+							hiden,
+							speed,
+							time: { start },
+							status: { down: "正在下载...", end: "完成\n" }
+						});
+						speed = 0;
+					}, 1000);
 					if (typeof cb === "function") cb(resp, res);
 				})
 				.on("data", function(data) {
@@ -91,6 +92,9 @@ class PromiseRequest extends EventEmitter {
 						response,
 						read
 					);
+				}).on("error", error => {
+					reject(error);
+					clearInterval(Interval);
 				})
 				.on("end", () => {
 					that.emit("progress", {
