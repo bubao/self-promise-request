@@ -1,6 +1,6 @@
 {
 	"name": "self-promise-request",
-	"version": "0.0.10",
+	"version": "0.0.11",
 	"description": "自己封装的一个request，使用promise，并能监听下载进度。",
 	"main": "index.js",
 	"dependencies": {
